@@ -88,7 +88,7 @@ contentElement.addEventListener('touchend', (e) => {
 
 function handleSwipe() {
     if (touchStartX && touchEndX) {
-        const swipeThreshold = 50;
+        const swipeThreshold = 111;
 
         if (touchStartX - touchEndX > swipeThreshold) {
             loadNewStory();
@@ -119,9 +119,8 @@ function loadNewStory() {
                 const randomIndex = Math.floor(Math.random() * (sections.length - 1)) + 1;
                 const randomSection = sections[randomIndex].trim();
                 document.getElementById('text-content').textContent = randomSection;
-                setTimeout(() => {
-                    scrollToTop(1000);
-                }, 88);
+                scrollToTop(1000)
+
             } else {
                 document.getElementById('text-content').textContent = "No more stories to load.";
             }
