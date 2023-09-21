@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, minimum-scale=1, initial-scale=1, minimal-ui">
+    <title>THE NEVERENDING STORYBOOK</title>
+
+<style>
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('jancieni.ttf') format('truetype');
+        }
+
+        body {
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            font-family: 'CustomFont', Arial, sans-serif;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            background-image: url('book.webp');
+            background-size: 100%;
+            background-repeat: no-repeat;
+            overflow: auto;
+        }
+
+    .content {
+        user-select: none;
+        padding: 16%;
+        box-sizing: border-box;
+        text-align: center;
+        white-space: pre-line;
+        font-size: 2.8rem;
+        max-width: 82%;
+        margin: 0 auto;
+        color: black;
+        opacity: 0.6;
+    }
+
+.content::first-line {
+    font-size: 3.8rem;
+}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="background-image"></div>
+    <div class="content" id="text-content">
+        <!-- Text content from book.txt will be loaded here using JavaScript -->
+    </div>
+</div>
+
+<script>
+
+    fetch('book.txt')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(text => {
+            const sections = text.split('---');
+            const firstStory = sections[0].trim();
+            document.getElementById('text-content').textContent = firstStory;
+        })
+        .catch(error => {
+            console.error('Error loading text:', error);
+        });
+
+let touchStartX = null;
+let touchEndX = null;
+
+const contentElement = document.getElementById('text-content');
+
+contentElement.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+});
+
+contentElement.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].clientX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    if (touchStartX && touchEndX) {
+        const swipeThreshold = 50;
+
+        if (touchStartX - touchEndX > swipeThreshold) {
+            loadNewStory();
+        }
+    }
+
+    touchStartX = null;
+    touchEndX = null;
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+        loadNewStory();
+    }
+});
+
+function loadNewStory() {
+    fetch('book.txt')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(text => {
+            const sections = text.split('---');
+            if (sections.length > 1) {
+                const randomIndex = Math.floor(Math.random() * (sections.length - 1)) + 1;
+                const randomSection = sections[randomIndex].trim();
+                document.getElementById('text-content').textContent = randomSection;
+                setTimeout(() => {
+                    scrollToTop(1000);
+                }, 88);
+            } else {
+                document.getElementById('text-content').textContent = "No more stories to load.";
+            }
+        })
+        .catch(error => {
+            console.error('Error loading text:', error);
+        });
+}
+
+function scrollToTop(duration) {
+    const start = window.pageYOffset || document.documentElement.scrollTop;
+    const startTime = 'now' in window.performance ? performance.now() : new Date().getTime();
+    const easeInOutQuad = (t, b, c, d) => {
+        t /= d / 2;
+        if (t < 1) return (c / 2) * t * t + b;
+        t--;
+        return (-c / 2) * (t * (t - 2) - 1) + b;
+    };
+
+    function animateScroll() {
+        const currentTime = 'now' in window.performance ? performance.now() : new Date().getTime();
+        const elapsed = currentTime - startTime;
+
+        window.scrollTo(0, easeInOutQuad(elapsed, start, -start, duration));
+
+        if (elapsed < duration) {
+            requestAnimationFrame(animateScroll);
+        }
+    }
+
+    requestAnimationFrame(animateScroll);
+}
+
+</script>
+</body>
+</html>
