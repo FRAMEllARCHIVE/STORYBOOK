@@ -22,7 +22,7 @@
 
         .container {
             background-image: url('book.webp');
-            background-size: 100%;
+            background-size: cover;
             background-repeat: no-repeat;
             overflow: auto;
         }
@@ -43,6 +43,42 @@
 .content::first-line {
     font-size: 3.8rem;
 }
+    .center-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Use the full viewport height for centering vertically */
+    }
+
+        body::-webkit-scrollbar {
+            width: 0px;
+            background-color: transparent;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background-color: rgba(1, 1, 1, 1.3);
+            border-radius: 2px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+#fullscreenButton {
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('book.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    transition: background-image 1.1s, opacity 1.1s;
+}
+
     </style>
 </head>
 <body>
@@ -53,6 +89,7 @@
         <!-- Text content from book.txt will be loaded here using JavaScript -->
     </div>
 </div>
+<button id="fullscreenButton"></button>
 
 <script>
 
@@ -153,6 +190,53 @@ function scrollToTop(duration) {
 
     requestAnimationFrame(animateScroll);
 }
+
+    function enterFullscreenAndLockOrientation() {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().then(() => {
+                if (screen.orientation.lock) {
+                    screen.orientation.lock("landscape");
+                }
+            });
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen().then(() => {
+                if (screen.orientation.lock) {
+                    screen.orientation.lock("landscape");
+                }
+            });
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const fullscreenButton = document.getElementById('fullscreenButton');
+
+        fullscreenButton.addEventListener('click', function () {
+            enterFullscreenAndLockOrientation();
+        });
+    });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const fullscreenButton = document.getElementById('fullscreenButton');
+
+    fullscreenButton.addEventListener('click', function () {
+        let opacity = 1;
+        const numberOfSteps = 42;
+        const fadeOutInterval = setInterval(function () {
+            if (opacity <= 0) {
+                clearInterval(fadeOutInterval);
+                fullscreenButton.style.display = 'none';
+            } else {
+                opacity -= 4.2 / numberOfSteps;
+                fullscreenButton.style.opacity = opacity;
+            }
+        }, 444);
+    });
+});
+
 
 </script>
 </body>
