@@ -237,6 +237,23 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+    var isFullscreenChangeListenerActive = true;
+
+function enableFullscreenChangeListener() {
+  isFullscreenChangeListenerActive = true;
+}
+
+function disableFullscreenChangeListener() {
+  isFullscreenChangeListenerActive = false;
+}
+
+document.addEventListener('fullscreenchange', function() {
+  if (isFullscreenChangeListenerActive) {
+    if (!document.fullscreenElement) {
+      location.reload();
+    }
+  }
+});
 
 </script>
 </body>
